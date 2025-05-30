@@ -1,7 +1,6 @@
-# 纪检监察智能助手系统
+# 纪检监察智能助手系统  
 
-![系统界面截图](https://via.placeholder.com/800x500/1a5f9e/ffffff?text=纪检监察智能助手系统界面)
-
+![纪检监察智能助手系统界面](./images/screenshot.png) 
 ## 项目简介
 
 纪检监察智能助手系统是基于DeepSeek大模型构建的专业AI辅助平台，专为电网企业纪检监察工作设计。系统整合党纪法规、企业规章和典型案例知识库，提供智能问答、文档分析和决策支持等功能，助力纪检监察工作标准化、智能化转型。
@@ -47,7 +46,7 @@ graph TD
 
 1. 克隆仓库：
 ```bash
-git clone https://github.com/your-repo/discipline-inspection-ai.git
+git clone https://github.com/GYMN-C/-.git
 cd discipline-inspection-ai
 ```
 
