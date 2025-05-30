@@ -1,0 +1,9 @@
+flask
+python-dotenv
+requests
+gunicorn
+werkzeug
+# 实际项目中应添加文档处理库：
+# PyPDF2
+# python-docx
+# pdfminer.six

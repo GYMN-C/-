@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纪检监察智能助手 - 电网+大模型系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">纪</div>
+            </div>
+            <div class="header-content">
+                <h1>纪检监察智能助手系统</h1>
+                <p>基于DeepSeek大模型的电网+纪检监察智能审核平台</p>
+            </div>
+        </header>
+        
+        <aside class="sidebar">
+            <h2><i class="fas fa-list"></i> 核心功能</h2>
+            <ul class="features">
+                <li class="active"><i class="fas fa-search"></i> 法规条款智能检索</li>
+                <li><i class="fas fa-balance-scale"></i> 违纪行为量纪参考</li>
+                <li><i class="fas fa-book"></i> 案例库智能分析</li>
+                <li><i class="fas fa-file-alt"></i> 文书规范性审核</li>
+                <li><i class="fas fa-chart-line"></i> 监督执纪数据分析</li>
+                <li><i class="fas fa-gavel"></i> 审查调查辅助决策</li>
+            </ul>
+            
+            <h2><i class="fas fa-file-upload"></i> 文档上传</h2>
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">
+                    上传PDF、DOCX或TXT格式的纪检监察文档
+                </div>
+                <button class="upload-btn" id="upload-btn">
+                    <i class="fas fa-upload"></i> 选择文件
+                </button>
+                <input type="file" id="file-upload" accept=".pdf,.docx,.txt" style="display:none">
+            </div>
+            
+            <div class="document-ref">
+                <strong>当前文档:</strong> 
+                <span id="current-document">尚未上传文档</span>
+                <div id="document-keywords" style="margin-top: 8px;"></div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>法规条款数量</h3>
+                    <div class="stat-value">1,258</div>
+                    <div class="stat-desc">涵盖党纪法规、企业规章</div>
+                </div>
+                <div class="stat-card">
+                    <h3>案例库规模</h3>
+                    <div class="stat-value">5,742</div>
+                    <div class="stat-desc">违纪违法典型案例</div>
+                </div>
+                <div class="stat-card">
+                    <h3>智能审核准确率</h3>
+                    <div class="stat-value">93.6%</div>
+                    <div class="stat-desc">文书规范性审核</div>
+                </div>
+            </div>
+            
+            <div class="chat-container">
+                <div class="chat-header">
+                    <i class="fas fa-comments"></i>
+                    <h2>纪检监察智能问答</h2>
+                </div>
+                <div class="chat-history" id="chat-history">
+                    <div class="message ai-message">
+                        <div class="message-header">
+                            <i class="fas fa-robot"></i> AI助手
+                        </div>
+                        <p>您好！我是纪检监察智能助手，我可以帮助您：</p>
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li>检索党纪法规和企业规章制度</li>
+                            <li>分析违纪行为适用的纪律条款</li>
+                            <li>提供类似案例的量纪参考</li>
+                            <li>审核纪检监察文书的规范性</li>
+                        </ul>
+                        <p>请提出您的问题或上传相关文档开始工作。</p>
+                        <div class="keyword-tag">纪律</div>
+                        <div class="keyword-tag">法规</div>
+                        <div class="keyword-tag">案例</div>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <textarea id="user-input" placeholder="请输入关于纪检监察的问题，例如：如何认定违反廉洁纪律的行为？同一违纪行为触犯多个条款如何处理？..."></textarea>
+                    <div class="action-buttons">
+                        <button class="action-btn secondary" id="upload-btn-chat">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <button class="action-btn" id="send-btn">
+                            <i class="fas fa-paper-plane"></i> 发送
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>纪检监察信息化建设五年规划 - 电网+大模型数据处理系统</p>
+            <p>构建全量知识库与大模型技术体系，推动纪检监督工作标准化、智能化转型</p>
+            <div class="system-tag">系统版本: 1.2.0 | 安全等级: 机密</div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatHistory = document.getElementById('chat-history');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const uploadBtn = document.getElementById('upload-btn');
+            const uploadArea = document.getElementById('upload-area');
+            const fileUpload = document.getElementById('file-upload');
+            const uploadBtnChat = document.getElementById('upload-btn-chat');
+            const currentDocument = document.getElementById('current-document');
+            const documentKeywords = document.getElementById('document-keywords');
+            let currentDocumentData = null;
+            
+            // 文件上传处理
+            uploadBtn.addEventListener('click', () => fileUpload.click());
+            uploadBtnChat.addEventListener('click', () => fileUpload.click());
+            uploadArea.addEventListener('click', () => fileUpload.click());
+            
+            fileUpload.addEventListener('change', async function(e) {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    const fileName = file.name;
+                    
+                    // 显示上传状态
+                    currentDocument.textContent = `上传中: ${fileName}...`;
+                    
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    
+                    try {
+                        const response = await fetch('/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        if (data.error) {
+                            alert(data.error);
+                            currentDocument.textContent = "上传失败";
+                        } else {
+                            currentDocument.textContent = fileName;
+                            currentDocumentData = data;
+                            
+                            // 显示关键词
+                            if (data.keywords && data.keywords.length > 0) {
+                                documentKeywords.innerHTML = '<strong>关键词:</strong> ';
+                                data.keywords.forEach(keyword => {
+                                    documentKeywords.innerHTML += `<span class="keyword-tag">${keyword}</span> `;
+                                });
+                            }
+                            
+                            // 添加到聊天记录
+                            addMessage('user', `
+                                <p>上传文档: ${fileName}</p>
+                                <div class="document-ref">
+                                    <strong>文档摘要:</strong> ${data.summary || "纪检监察文档摘要信息"}
+                                </div>
+                            `);
+                            
+                            // 模拟AI响应
+                            setTimeout(() => {
+                                addMessage('ai', `
+                                    <p>已成功接收纪检监察文档（${fileName}）。</p>
+                                    <p>系统已对文档进行初步分析，您可基于此文档提出以下问题：</p>
+                                    <ul style="margin: 10px 0 10px 20px;">
+                                        <li>上述行为应适用哪些纪律条款？</li>
+                                        <li>类似案例的量纪标准是什么？</li>
+                                        <li>请生成案件审查报告框架</li>
+                                        <li>分析文档中的违纪行为性质</li>
+                                    </ul>
+                                `, data.keywords);
+                            }, 1000);
+                        }
+                    } catch (error) {
+                        alert(`上传失败: ${error.message}`);
+                        currentDocument.textContent = "上传失败";
+                    }
+                }
+            });
+            
+            // 发送消息
+            async function sendMessage() {
+                const message = userInput.value.trim();
+                if (!message && !currentDocumentData) return;
+                
+                // 添加用户消息
+                addMessage('user', message || "查看上传的文档");
+                userInput.value = '';
+                userInput.focus();
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('message', message);
+                    
+                    // 如果有文档引用
+                    if (currentDocumentData && currentDocumentData.filename) {
+                        formData.append('document_ref', currentDocumentData.summary || currentDocumentData.filename);
+                    }
+                    
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    if (data.error) {
+                        addMessage('ai', `错误: ${data.error}`);
+                    } else {
+                        addMessage('ai', data.response, data.keywords);
+                    }
+                } catch (error) {
+                    addMessage('ai', `请求失败: ${error.message}`);
+                }
+            }
+            
+            // 添加消息到聊天记录
+            function addMessage(sender, text, keywords = []) {
+                const icon = sender === 'user' ? 'fas fa-user' : 'fas fa-robot';
+                const name = sender === 'user' ? '用户' : 'AI助手';
+                
+                const message = document.createElement('div');
+                message.className = `message ${sender}-message`;
+                message.innerHTML = `
+                    <div class="message-header">
+                        <i class="${icon}"></i> ${name}
+                    </div>
+                    ${text}
+                `;
+                
+                // 添加关键词
+                if (keywords && keywords.length > 0) {
+                    const keywordsContainer = document.createElement('div');
+                    keywordsContainer.style.marginTop = '10px';
+                    keywords.forEach(keyword => {
+                        const tag = document.createElement('span');
+                        tag.className = 'keyword-tag';
+                        tag.textContent = keyword;
+                        keywordsContainer.appendChild(tag);
+                    });
+                    message.appendChild(keywordsContainer);
+                }
+                
+                chatHistory.appendChild(message);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+            
+            // 事件监听
+            sendBtn.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // 功能菜单点击
+            document.querySelectorAll('.features li').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.features li').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 根据选择的功能显示提示
+                    const feature = this.textContent.trim();
+                    addMessage('user', `切换到功能：${feature}`);
+                    
+                    setTimeout(() => {
+                        let response = '';
+                        let keywords = [];
+                        switch(feature) {
+                            case '法规条款智能检索':
+                                response = '<p>法规条款检索功能已激活。请输入关键词如"廉洁纪律"、"组织纪律"等，我将为您查找相关条款。</p>';
+                                keywords = ['法规', '条款', '检索'];
+                                break;
+                            case '违纪行为量纪参考':
+                                response = '<p>量纪参考功能已就绪。请描述违纪行为细节，我将提供类似案例的处理参考。</p>';
+                                keywords = ['违纪', '量纪', '参考'];
+                                break;
+                            case '案例库智能分析':
+                                response = '<p>案例库分析功能已启用。请输入案件特征或关键词，我将查找匹配案例。</p>';
+                                keywords = ['案例', '分析', '参考'];
+                                break;
+                            case '文书规范性审核':
+                                response = '<p>文书规范性检查功能已准备。请上传或粘贴文书内容，我将进行规范性检查。</p>';
+                                keywords = ['文书', '规范', '审核'];
+                                break;
+                            default:
+                                response = `<p>${feature}功能已激活，请输入相关指令开始使用。</p>`;
+                                keywords = [feature];
+                        }
+                        addMessage('ai', response, keywords);
+                    }, 800);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
