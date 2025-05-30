@@ -47,7 +47,6 @@ graph TD
 1. 克隆仓库：
 ```bash
 git clone https://github.com/GYMN-C/-.git
-cd discipline-inspection-ai
 ```
 
 2. 安装依赖：
@@ -117,21 +116,11 @@ discipline-inspection-ai/
 2. Fork仓库并提交Pull Request
 3. 完善文档或添加测试用例
 
-贡献前请阅读：
-- [代码风格指南](STYLE_GUIDE.md)
-- [贡献者公约](CODE_OF_CONDUCT.md)
 
 ## 许可证
 
 本项目采用 [MIT License](LICENSE)。
 
-## 联系我们
-
-如有任何问题，请联系：
-- 项目维护者：your-email@example.com
-- 纪检监察办公室：discipline@example.com
-
----
 
 **纪检监察信息化建设五年规划 - 电网+大模型数据处理系统**  
 构建全量知识库与大模型技术体系，推动纪检监督工作智能化转型
